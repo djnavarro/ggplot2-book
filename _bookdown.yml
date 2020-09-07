@@ -23,7 +23,6 @@ rmd_files:
 - "position-scales.Rmd"
 - "colour-scales.Rmd"
 - "other-scales.Rmd"
-- "guides.Rmd"
 
 - "mastery.Rmd"
 - "layers.Rmd"
