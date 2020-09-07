@@ -19,10 +19,14 @@ rmd_files:
 - "annotations.Rmd"
 - "arranging-plots.Rmd"
 
+- "scales.Rmd"
+- "position-scales.Rmd"
+- "colour-scales.Rmd"
+- "other-scales.Rmd"
+- "guides.Rmd"
+
 - "mastery.Rmd"
 - "layers.Rmd"
-- "scales.Rmd"
-- "guides.Rmd"
 - "coord.Rmd"
 - "facet.Rmd"
 - "themes.Rmd"

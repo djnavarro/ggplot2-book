@@ -1,0 +1,6 @@
+```{r setup colour-scales-chap, include = FALSE}
+source("common.R")
+columns(1, 2 / 3)
+```
+
+# Colour Scales {#colour-scales}

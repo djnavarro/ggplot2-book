@@ -1,0 +1,6 @@
+```{r setup other-scales-chap, include = FALSE}
+source("common.R")
+columns(1, 2 / 3)
+```
+
+# Other Scales {#other-scales}
