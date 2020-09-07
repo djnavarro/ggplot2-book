@@ -1,4 +1,4 @@
-# (PART) Layers Toolbox {-}
+# (PART) Layers toolbox {-}
 
 # Introduction {#toolbox .unnumbered}
 

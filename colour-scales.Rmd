@@ -1,19 +1,21 @@
 ```{r setup colour-scales-chap, include = FALSE}
 source("common.R")
 columns(1, 2 / 3)
+toy <- data.frame(
+  const = 1, 
+  up = 1:4,
+  txt = letters[1:4], 
+  big = (1:4)*1000,
+  log = c(2, 5, 10, 2000)
+)
 ```
 
-# Colour Scales {#colour-scales}
-
-
-
-
-## Colour scales {#scale-colour}
+# Colour scales {#scale-colour}
 
 After position, the most commonly used aesthetics are those based on colour, and there are many ways to map values to colours in ggplot2. Before we look at the details, it's useful to learn a little bit of colour theory. Colour theory is complex because the underlying biology of the eye and brain is complex, and this introduction will only touch on some of the more important issues. An excellent and more detailed exposition is available online at <http://tinyurl.com/clrdtls>. \index{Colour} \index{Scales!colour}
 
 
-### A little colour theory
+## A little colour theory
 <!-- ...as a treat -->
 
 At the physical level, colour is produced by a mixture of wavelengths of light. To characterise a colour completely, we need to know the complete mixture of wavelengths. Fortunately for us the human eye only has three different colour receptors, and so we can summarise the perception of any colour with just three numbers. You may be familiar with the RGB encoding of colour space, which defines a colour by the intensities of red, green and blue light needed to produce it. One problem with this space is that it is not perceptually uniform: the two colours that are one unit apart may look similar or very different depending on where they are in the colour space. This makes it difficult to create a mapping from a continuous variable to a set of colours. There have been many attempts to come up with colours spaces that are more perceptually uniform.  We'll use a modern attempt called the HCL colour space, which has three components of **h**ue, **c**hroma and **l**uminance: \index{Colour!spaces}
@@ -33,7 +35,7 @@ knitr::include_graphics("diagrams/hcl-space.png", dpi = 300)
 
 An additional complication is that many people (~10% of men) do not possess the normal complement of colour receptors and so can distinguish fewer colours than usual. \index{Colour!blindness} In brief, it's best to avoid red-green contrasts, and to check your plots with systems that simulate colour blindness. Visicheck is one online solution. Another alternative is the **dichromat** package [@dichromat] which provides tools for simulating colour blindness, and a set of colour schemes known to work well for colour-blind people. You can also help people with colour blindness in the same way that you can help people with black-and-white printers: by providing redundant mappings to other aesthetics like size, line type or shape.
 
-### Continuous colour scales {#colour-continuous}
+## Continuous colour scales {#colour-continuous}
 
 Colour gradients are often used to show the height of a 2d surface. The plots in this section use the surface of a 2d density estimate of the `faithful` dataset [@azzalini:1990], which records the waiting time between eruptions and during each eruption for the Old Faithful geyser in Yellowstone Park. I hide the legends and set `expand` to 0, to focus on the appearance of the data. Remember: although I use the `erupt` plot to illustrate concepts using with a fill aesthetic, the same ideas apply to colour scales. Any time I refer to `scale_fill_*()` in this section there is a corresponding `scale_colour_*()` for the colour aesthetic (or `scale_color_*()` if you prefer US spelling).
 \index{Colour!gradients} \index{Scales!colour}
@@ -47,7 +49,7 @@ erupt <- ggplot(faithfuld, aes(waiting, eruptions, fill = density)) +
   theme(legend.position = "none")
 ```
 
-#### Particular palettes
+### Particular palettes
 
 There are multiple ways to specify continuous colour scales. Later I'll talk about general purpose tools that you can use to construct your own palette, but this is often unnecessary as there are many "hand picked" palettes available. For example, ggplot2 supplies two scale functions that bundle pre-specified palettes, `scale_fill_viridis_c()` and `scale_fill_distiller()`. The viridis scales [@viridis] are designed to be perceptually uniform in both colour and when reduced to black and white, and to be perceptible to people with various forms of colour blindness.
 
@@ -82,7 +84,7 @@ erupt + paletteer::scale_fill_paletteer_c("gameofthrones::targaryen")
 ```
 
 
-#### Robust recipes
+### Robust recipes
 
 The default scale for continuous fill scales is `scale_fill_continuous()` which in turn defaults to `scale_fill_gradient()`. As a consequence, these three commands produce the same plot using a gradient scale:
 
@@ -153,7 +155,7 @@ erupt + scale_fill_gradientn(colours = colorspace::diverge_hcl(7))
     
 
 
-#### Missing values
+### Missing values
 
 All continuous colour scales have an `na.value` parameter that controls what colour is used for missing values (including values outside the range of the scale limits). By default it is set to grey, which will stand out when you use a colourful scale. If you use a black and white scale, you might want to set it to something else to make it more obvious. You can set `na.value = NA` to make missing values invisible, or choose a specific colour if you prefer: \indexc{na.value} \index{Missing values!changing colour}
 
@@ -170,7 +172,7 @@ base + scale_fill_gradient(na.value = "yellow")
 
 
 
-### Discrete colour scales {#colour-discrete}
+## Discrete colour scales {#colour-discrete}
 
 Discrete colour and fill scales occur in many situations. A typical example is a barchart that encodes both position and fill to the same variable. Many concepts from Section \@ref(colour-continuous) apply to discrete scales, which I will illustrate using this barchart as the running example: \index{Colour!discrete scales}
 
@@ -193,7 +195,7 @@ bars + scale_fill_hue()
 
 This default scale has some limitations (discussed shortly) so I'll begin by discussing tools for producing nicer discrete palettes.
 
-#### Brewer scales
+### Brewer scales
 
 `scale_colour_brewer()` is a discrete colour scale that---along with the continuous analog `scale_colour_distiller()` and binned analog `scale_colour_fermenter()`---uses handpicked "ColorBrewer" colours taken from <http://colorbrewer2.org/>. These colours have been designed to work well in a wide variety of situations, although the focus is on maps and so the colours tend to work better when displayed in large areas. There are many different options:
 `r columns(1, 2)`
@@ -244,7 +246,7 @@ area + scale_fill_brewer(palette = "Set2")
 area + scale_fill_brewer(palette = "Pastel1")
 ```
 
-#### Hue and grey scales
+### Hue and grey scales
 
 The default colour scheme picks evenly spaced hues around the HCL colour wheel. This works well for up to about eight colours, but after that it becomes hard to tell the different colours apart. You can control the default chroma and luminance, and the range of hues, with the `h`, `c` and `l` arguments:
 \indexf{scale\_colour\_hue}
@@ -268,7 +270,7 @@ bars + scale_fill_grey(start = 0, end = 0.5)
 ```
 
 
-#### Manual scales
+### Manual scales
 
 If none of the hand-picked palettes is suitable, or if you have your own preferred colours, you can use `scale_fill_manual()` to set the colours manually. This can be useful if you wish to choose colours that highlight a secondary grouping structure or draw attention to different comparisons:
 \indexf{scale\_colour\_manual} 
@@ -281,7 +283,7 @@ bars + scale_fill_manual(values = c("grey", "black", "grey", "grey"))
 
 
 
-### Binned colour scales
+## Binned colour scales
 
 Colour scales also come in binned versions. The default scale is `scale_fill_binned()` which in turn defaults to `scale_fill_steps()`. As with the binned position scales discussed in Section \@ref(binned-position) these scales have an `n.breaks` argument that controls the number of discrete colour categories created by the scale. Counterintuitively---because the human visual system is very good at detecting edges---this can sometimes make a continuous colour gradient easier to perceive:
 
@@ -312,7 +314,7 @@ Note that like the discrete `scale_fill_brewer()`---and unlike the continuous `s
 
 
 
-## Scale guides {#scale-guide}
+## Colour guides {#scale-guide}
 
 Another way to modify the behaviour of axes and legends is with the `guide` argument of the relevant scale function or---perhaps more conveniently---the `guides()` helper function. The `guides()` helper works in a similar way to the `labs()` helper function described in Section \@ref(scale-name). Both take the name of different aesthetics (e.g., color, x, fill) as arguments and allow you to specify your own value. Where `labs()` provides a shorthand way to specify the `name` argument to one or more scales, the `guides()` function allows you to specify `guide` arguments to one or more scales. In the same way that `labs(colour = "a colour scale name")` specifies the name associated with the colour scale, a command such as `guides(colour = guide_coloursteps())` can be used to specify its associated guide:
 
@@ -499,5 +501,153 @@ base <- ggplot(faithfuld, aes(waiting, eruptions)) +
 base
 base + scale_fill_continuous(trans = "sqrt")
 ```
+
+
+
+
+
+## Scale breaks
+
+
+In the same way that the `name` argument to a scale function governs axis titles and legend titles, the `breaks` argument controls which values appear as tick marks on axes and as keys on legends. 
+
+The examples below illustrate the same ideas applied to legends:
+
+```{r}
+leg <- ggplot(toy, aes(up, up, fill = big)) + 
+  geom_tile() + 
+  labs(x = NULL, y = NULL) 
+
+leg 
+leg + scale_fill_continuous(breaks = c(2000, 4000))
+```
+
+### Break functions
+
+In the examples above, I specified breaks manually, but ggplot2 also allows you to pass a function to `breaks`. This function should have one argument that specifies the limits of the scale (a numeric vector of length two), and it should return a numeric vector of breaks. You can write your own break function, but in many cases there is no need, thanks to the scales package [@scales]. It provides several tools that are useful for this purpose:
+
+* `scales::breaks_extended()`	creates automatic breaks for numeric axes.
+* `scales::breaks_log()`	creates breaks appropriate for log axes.
+* `scales::breaks_pretty()`	creates "pretty" breaks for date/times.
+* `scales::breaks_width()`	creates equally spaced breaks.
+
+The `breaks_extended()` function is the standard method used in ggplot2, and accordingly the first two plots below are the same. I can alter the desired number of breaks by setting `n = 2`, as illustrated in the third plot. Note that `breaks_extended()` treats `n` as a suggestion rather than a strict constraint. If you need to specify exact breaks it is better to do so manually.  
+
+`r columns(3, 1/2)`
+```{r}
+axs
+axs + scale_x_continuous(breaks = scales::breaks_extended())
+axs + scale_x_continuous(breaks = scales::breaks_extended(n = 2))
+```
+
+Another approach that is sometimes useful is specifying a fixed `width` that defines the spacing between breaks. The `breaks_width()` function is used for this. The first example below shows how to fix the width at a specific value; the second example illustrates the use of the `offset` argument that shifts all the breaks by a specified amount:
+
+`r columns(3, 1/2)`
+```{r}
+axs + scale_x_continuous(breaks = scales::breaks_width(800))
+axs + scale_x_continuous(breaks = scales::breaks_width(800, offset = 200))
+axs + scale_x_continuous(breaks = scales::breaks_width(800, offset = -200))
+```
+
+Notice the difference between setting an offset of 200 and -200.
+
+
+### Suppressing breaks
+
+<!-- DN: I like this as a distinct section! -->
+
+You can suppress the breaks entirely by setting them to `NULL`. For axes, this removes the tick marks, grid lines, and labels; and for legends this this removes the keys and labels.
+
+`r columns(2, 2/3)`
+```{r}
+leg + scale_fill_continuous(breaks = NULL)
+```
+
+
+## Scale labels
+\index{Axis!labels} \index{Legend!keys}
+
+Every break is associated with a label and these can be changed by setting the `labels` argument to the scale function:
+
+```{r}
+leg + scale_fill_continuous(breaks = c(2000, 4000), labels = c("2k", "4k"))
+```
+
+When the data are categorical, you also have the option of using a named vector to set the labels associated with particular values. This allows you to change some labels and not others, without altering the ordering or the breaks:
+
+`r columns(2, 2/3)`
+```{r}
+base <- ggplot(toy, aes(const, txt)) + 
+  geom_point() +
+  labs(x = NULL, y = NULL)
+
+base
+base + scale_y_discrete(labels = c(c = "carrot", b = "banana"))
+```
+
+### Label functions {#label-functions}
+
+In the examples above I specified the vector of `labels` manually, but ggplot2 also allows you to pass a labelling function. A function passed to `labels` should accept a numeric vector of breaks as input and return a character vector of labels (the same length as the input). The scales package provides a number of tools that will automatically construct label functions for you. Some of the more useful examples for numeric data include:
+
+* `scales::label_bytes()` formats numbers as kilobytes, megabytes etc.
+* `scales::label_comma()` formats numbers as decimals with coomas added.
+* `scales::label_dollar()` formats numbers as currency.
+* `scales::label_ordinal()` formats numbers in rank order: 1st, 2nd, 3rd etc.
+* `scales::label_percent()` formats numbers as percentages.
+* `scales::label_pvalue()` formats numbers as p-values: <.05, <.01, .34, etc.
+
+The also contains functions relevant for other kinds of data, such as `scales::label_wrap()` which allows you to wrap long strings across lines. 
+
+A few examples are shown below to illustrate how these functions are used:
+
+`r columns(3)`
+```{r}
+leg + scale_fill_continuous(labels = scales::label_bytes())
+```
+
+See the documentation of the scales package for more detail.
+
+### Suppressing labels
+
+You can suppress labels with `labels = NULL`. This will remove the labels from the axis or legend while leaving its other properties unchanged:
+
+```{r}
+leg + scale_fill_continuous(labels = NULL)
+```
+
+
+<!-- ### Exercises -->
+
+<!-- 1.  Recreate the following graphic: -->
+
+<!--     ```{r, echo = FALSE} -->
+<!--     ggplot(mpg, aes(displ, hwy)) +  -->
+<!--       geom_point() +   -->
+<!--       scale_x_continuous("Displacement", labels = scales::unit_format(suffix = "L")) +  -->
+<!--       scale_y_continuous(quote(paste("Highway ", (frac(miles, gallon)))))  -->
+<!--     ``` -->
+
+<!--     Adjust the y axis label so that the parentheses are the right size. -->
+
+<!-- 1.  List the three different types of object you can supply to the -->
+<!--     `breaks` argument. How do `breaks` and `labels` differ? -->
+
+<!-- 1.  Recreate the following plot: -->
+
+<!--     ```{r, echo = FALSE} -->
+<!--     drv_labels <- c("4" = "4wd", "f" = "fwd", "r" = "rwd") -->
+<!--     ggplot(mpg, aes(displ, hwy)) +  -->
+<!--       geom_point(aes(colour = drv)) +   -->
+<!--       scale_colour_discrete(labels = drv_labels) -->
+<!--     ``` -->
+
+<!-- 1.  What label function allows you to create mathematical expressions? -->
+<!--     What label function converts 1 to 1st, 2 to 2nd, and so on? -->
+
+<!-- 1.  What are the three most important arguments that apply to both  -->
+<!--     axes and legends? What do they do? Compare and contrast their -->
+<!--     operation for axes vs. legends. -->
+
+
 
 

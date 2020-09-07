@@ -3,7 +3,7 @@ source("common.R")
 columns(1, 2 / 3)
 ```
 
-# Other Scales {#other-scales}
+# Other scales {#scale-other}
 
 
 ## Size scales
